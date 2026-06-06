@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evaluations — SAMY Agentic Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;350;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #ffffff; --surface: #ffffff; --fg: #000000;
+  --muted: rgba(0,0,0,0.55); --meta: rgba(0,0,0,0.40);
+  --border: rgba(0,0,0,0.12); --border-soft: rgba(0,0,0,0.06);
+  --accent: #7C3AED; --accent-on: #ffffff; --accent-hover: #6D28D9;
+  --accent-active: rgba(124,58,237,0.08); --accent-glow: rgba(124,58,237,0.25);
+  --success: #16a34a; --warn: #ca8a04; --danger: #dc2626; --info: #2563eb;
+  --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --radius-sm: 6px; --radius-md: 8px; --radius-pill: 9999px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+  --nav-h: 52px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; font-feature-settings: "kern";
+}
+a { color: inherit; text-decoration: none; }
+h1,h2,h3,h4 { margin: 0; font-family: var(--font-display); }
+
+/* ── Top Nav ── */
+.topnav {
+  position: sticky; top: 0; z-index: 100; height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-6); border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.topnav-left { display: flex; align-items: center; gap: var(--space-8); }
+.topnav-brand { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.topnav-brand span { color: var(--accent); }
+.topnav-links { display: flex; gap: var(--space-1); }
+.topnav-link {
+  padding: 6px 14px; border-radius: var(--radius-pill); font-size: 13px;
+  font-weight: 450; color: var(--muted); transition: all 0.2s ease;
+}
+.topnav-link:hover { color: var(--fg); background: var(--accent-active); }
+.topnav-link.active { color: var(--accent); background: var(--accent-active); font-weight: 500; }
+.topnav-right { display: flex; align-items: center; gap: var(--space-4); }
+.topnav-avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+  color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 600;
+}
+
+/* ── Page Layout ── */
+.page { max-width: 1120px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+.page-title { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+.page-subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 18px; border-radius: var(--radius-pill); border: none;
+  font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn:focus-visible { outline: solid 2px var(--accent); outline-offset: 2px; }
+.btn-primary { background: var(--accent); color: var(--accent-on); }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 14px var(--accent-glow); }
+.btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 14px var(--accent-glow); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* ── Metric Cards ── */
+.metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4); margin-bottom: var(--space-8); }
+.metric-card {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: var(--space-5); transition: all 0.2s ease;
+}
+.metric-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px var(--accent-glow); }
+.metric-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--meta); margin-bottom: var(--space-2);
+}
+.metric-value {
+  font-family: var(--font-display); font-size: 28px; font-weight: 600;
+  letter-spacing: -0.03em; line-height: 1.1;
+}
+.metric-delta {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-family: var(--font-mono); font-size: 11px; margin-top: var(--space-2);
+}
+.metric-delta.up { color: var(--success); }
+.metric-delta.down { color: var(--danger); }
+.metric-delta.neutral { color: var(--muted); }
+.metric-bar {
+  height: 4px; border-radius: 2px; background: var(--border-soft);
+  margin-top: var(--space-3); overflow: hidden;
+}
+.metric-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+/* ── Section ── */
+.section { margin-bottom: var(--space-8); }
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+.section-title {
+  font-family: var(--font-display); font-size: 16px; font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.section-count {
+  font-family: var(--font-mono); font-size: 11px; color: var(--meta);
+  background: rgba(0,0,0,0.04); padding: 2px 8px; border-radius: var(--radius-pill);
+}
+
+/* ── Scenario Cards ── */
+.scenarios { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-4); }
+.scenario-card {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  overflow: hidden; transition: all 0.2s ease;
+}
+.scenario-card:hover { border-color: rgba(0,0,0,0.2); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.scenario-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-soft);
+}
+.scenario-name { font-size: 14px; font-weight: 500; }
+.scenario-badge {
+  display: inline-flex; padding: 2px 8px; border-radius: var(--radius-pill);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em;
+}
+.scenario-badge.pass { background: rgba(22,163,74,0.10); color: var(--success); }
+.scenario-badge.fail { background: rgba(220,38,38,0.10); color: var(--danger); }
+.scenario-badge.partial { background: rgba(202,138,4,0.10); color: var(--warn); }
+.scenario-body { padding: var(--space-4) var(--space-5); }
+.scenario-desc { font-size: 13px; color: var(--muted); margin-bottom: var(--space-4); line-height: 1.55; }
+.scenario-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.scenario-metric {}
+.scenario-metric-label { font-size: 11px; color: var(--meta); }
+.scenario-metric-value { font-family: var(--font-mono); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.scenario-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-5); border-top: 1px solid var(--border-soft);
+  background: rgba(0,0,0,0.015);
+}
+.scenario-time { font-family: var(--font-mono); font-size: 11px; color: var(--meta); }
+.scenario-link {
+  font-size: 12px; font-weight: 500; color: var(--accent);
+  transition: all 0.2s ease;
+}
+.scenario-link:hover { color: var(--accent-hover); }
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .metrics { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 680px) {
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .scenarios { grid-template-columns: 1fr; }
+  .page { padding: var(--space-5) var(--space-4); }
+  .topnav-links { display: none; }
+}
+@media (max-width: 420px) {
+  .metrics { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<nav class="topnav">
+  <div class="topnav-left">
+    <div class="topnav-brand">SAM<span>Y</span></div>
+    <div class="topnav-links">
+      <a href="campaign-workspace.html" class="topnav-link">Workspace</a>
+      <a href="evaluations.html" class="topnav-link active">Evaluations</a>
+    </div>
+  </div>
+  <div class="topnav-right">
+    <div class="topnav-avatar">JM</div>
+  </div>
+</nav>
+
+<!-- ── Page ── -->
+<div class="page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Evaluations</h1>
+      <div class="page-subtitle">Agent performance metrics across 47 evaluation runs</div>
+    </div>
+    <div style="display:flex; gap: var(--space-2);">
+      <button class="btn btn-secondary btn-sm">Export CSV</button>
+      <button class="btn btn-primary btn-sm">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Run Eval Suite
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Metric Cards ── -->
+  <div class="metrics">
+
+    <div class="metric-card">
+      <div class="metric-label">Tool Success Rate</div>
+      <div class="metric-value">94.2%</div>
+      <div class="metric-delta up">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+        +2.1% vs last run
+      </div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:94.2%; background:var(--success);"></div></div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Guardrail Pass Rate</div>
+      <div class="metric-value">97.8%</div>
+      <div class="metric-delta up">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+        +0.5% vs last run
+      </div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:97.8%; background:var(--success);"></div></div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Response Quality</div>
+      <div class="metric-value">4.3<span style="font-size:16px;color:var(--muted);font-weight:400">/5</span></div>
+      <div class="metric-delta up">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+        +0.2 vs last run
+      </div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:86%; background:var(--accent);"></div></div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Avg Latency</div>
+      <div class="metric-value">3.8<span style="font-size:16px;color:var(--muted);font-weight:400">s</span></div>
+      <div class="metric-delta down">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+        +0.4s vs last run
+      </div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:62%; background:var(--warn);"></div></div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Est. Cost / Run</div>
+      <div class="metric-value">$0.42</div>
+      <div class="metric-delta neutral">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        stable
+      </div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:42%; background:var(--info);"></div></div>
+    </div>
+
+  </div>
+
+  <!-- ── Evaluation Scenarios ── -->
+  <div class="section">
+    <div class="section-header">
+      <div style="display:flex;align-items:center;gap:var(--space-3);">
+        <h2 class="section-title">Evaluation Scenarios</h2>
+        <span class="section-count">8 scenarios</span>
+      </div>
+      <button class="btn btn-secondary btn-sm">Filter</button>
+    </div>
+
+    <div class="scenarios">
+
+      <!-- Scenario 1 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Brief Parsing Accuracy</span>
+          <span class="scenario-badge pass">PASS</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Validates that the agent correctly extracts brand, objective, audience, platforms, budget, and timeline from unstructured campaign briefs.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">98.4%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">0.3s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">12</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.01</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 14 min ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 2 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Audience Research Quality</span>
+          <span class="scenario-badge pass">PASS</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Evaluates whether audience segments are relevant, data-backed, and include engagement benchmarks appropriate for the brand and platforms.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">91.7%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">4.2s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">8</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.08</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 14 min ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 3 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Strategy Coherence</span>
+          <span class="scenario-badge pass">PASS</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Checks that generated campaign strategies have logical phase progression, realistic content volumes, and platform-appropriate formats.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">89.3%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">8.1s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">6</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.14</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 22 min ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 4 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Creator Matching Relevance</span>
+          <span class="scenario-badge partial">PARTIAL</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Tests whether shortlisted creators match the brand niche, audience demographics, and engagement thresholds specified in the brief.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">78.6%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">6.4s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">7</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.09</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 22 min ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 5 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Brand Safety Guardrails</span>
+          <span class="scenario-badge pass">PASS</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Verifies that all generated content and creator selections pass FTC compliance, brand guideline checks, and content claim validation.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">100%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">1.2s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">10</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.03</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 14 min ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 6 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Budget Estimation Accuracy</span>
+          <span class="scenario-badge pass">PASS</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Compares agent-estimated budgets against historical campaign data to validate cost projections for creator fees, boosted content, and production.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">92.1%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">2.8s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">5</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.05</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 1 hr ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 7 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">Calendar Realism</span>
+          <span class="scenario-badge fail">FAIL</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Checks whether the content calendar respects platform posting frequency norms, avoids overposting, and aligns with optimal posting times.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">64.3%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">5.7s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">4</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.11</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 1 hr ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Scenario 8 -->
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <span class="scenario-name">End-to-End Campaign</span>
+          <span class="scenario-badge pass">PASS</span>
+        </div>
+        <div class="scenario-body">
+          <div class="scenario-desc">Full pipeline test — brief through approval. Validates tool-call sequencing, state management, and that the final report is internally consistent.</div>
+          <div class="scenario-metrics">
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Success Rate</div>
+              <div class="scenario-metric-value">85.7%</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Avg Latency</div>
+              <div class="scenario-metric-value">22.4s</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Runs</div>
+              <div class="scenario-metric-value">7</div>
+            </div>
+            <div class="scenario-metric">
+              <div class="scenario-metric-label">Cost</div>
+              <div class="scenario-metric-value">$0.42</div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario-foot">
+          <span class="scenario-time">Last run: 14 min ago</span>
+          <a href="#" class="scenario-link">View traces &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

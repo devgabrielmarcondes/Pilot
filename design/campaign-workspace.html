@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campaign Workspace — SAMY Agentic Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;350;400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #ffffff; --surface: #ffffff; --fg: #000000;
+  --muted: rgba(0,0,0,0.55); --meta: rgba(0,0,0,0.40);
+  --border: rgba(0,0,0,0.12); --border-soft: rgba(0,0,0,0.06);
+  --accent: #7C3AED; --accent-on: #ffffff; --accent-hover: #6D28D9;
+  --accent-active: rgba(124,58,237,0.08); --accent-glow: rgba(124,58,237,0.25);
+  --success: #16a34a; --warn: #ca8a04; --danger: #dc2626; --info: #2563eb;
+  --agent-running: #2563eb; --agent-done: #16a34a; --agent-wait: #9333ea; --agent-error: #dc2626;
+  --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --radius-sm: 6px; --radius-md: 8px; --radius-pill: 9999px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+  --nav-h: 52px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; font-feature-settings: "kern";
+}
+a { color: inherit; text-decoration: none; }
+h1,h2,h3,h4 { margin: 0; font-family: var(--font-display); }
+
+/* ── Top Nav ── */
+.topnav {
+  position: sticky; top: 0; z-index: 100; height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-6); border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.topnav-left { display: flex; align-items: center; gap: var(--space-8); }
+.topnav-brand {
+  font-family: var(--font-display); font-size: 16px; font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.topnav-brand span { color: var(--accent); }
+.topnav-links { display: flex; gap: var(--space-1); }
+.topnav-link {
+  padding: 6px 14px; border-radius: var(--radius-pill); font-size: 13px;
+  font-weight: 450; color: var(--muted); transition: all 0.2s ease;
+}
+.topnav-link:hover { color: var(--fg); background: var(--accent-active); }
+.topnav-link.active { color: var(--accent); background: var(--accent-active); font-weight: 500; }
+.topnav-right { display: flex; align-items: center; gap: var(--space-4); }
+.topnav-avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+  color: #fff; display: grid; place-items: center;
+  font-size: 11px; font-weight: 600;
+}
+
+/* ── Layout ── */
+.app-layout {
+  display: grid; grid-template-columns: 300px 1fr;
+  height: calc(100vh - var(--nav-h)); overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  border-right: 1px solid var(--border); overflow-y: auto;
+  padding: var(--space-5);
+}
+.sidebar-title {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--meta); margin-bottom: var(--space-4);
+}
+.form-group { margin-bottom: var(--space-4); }
+.form-label {
+  display: block; font-size: 12px; font-weight: 500; color: var(--fg);
+  margin-bottom: var(--space-1);
+}
+.form-hint { font-size: 11px; color: var(--meta); margin-top: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font: inherit; font-size: 13px;
+  background: var(--surface); transition: all 0.2s ease;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: solid 2px var(--accent); outline-offset: 1px; border-color: var(--accent);
+}
+.form-textarea { min-height: 64px; resize: vertical; line-height: 1.5; }
+.form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.form-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-2); }
+.form-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: var(--radius-pill);
+  font-size: 11px; background: var(--accent-active); color: var(--accent);
+  font-weight: 500;
+}
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 18px; border-radius: var(--radius-pill); border: none;
+  font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+}
+.btn:focus-visible { outline: solid 2px var(--accent); outline-offset: 2px; }
+.btn-primary { background: var(--accent); color: var(--accent-on); }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 14px var(--accent-glow); }
+.btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 14px var(--accent-glow); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #b91c1c; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(220,38,38,0.25); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-full { width: 100%; }
+.btn-icon {
+  width: 32px; height: 32px; padding: 0; border-radius: 50%;
+  background: rgba(0,0,0,0.05); border: none; cursor: pointer;
+  display: grid; place-items: center; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-icon:hover { background: var(--accent); color: #fff; transform: scale(1.08); }
+.btn-icon svg { width: 16px; height: 16px; }
+
+/* ── Main Content ── */
+.main-content { overflow-y: auto; padding: var(--space-6); }
+.main-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+.main-title { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.main-subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.status-bar {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4); border: 1px solid var(--border);
+  border-radius: var(--radius-md); margin-bottom: var(--space-6);
+  background: var(--surface);
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.running { background: var(--agent-running); animation: pulse 1.5s infinite; }
+.status-dot.done { background: var(--agent-done); }
+.status-label { font-size: 13px; font-weight: 500; }
+.status-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-left: auto; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ── Section ── */
+.section { margin-bottom: var(--space-8); }
+.section-header {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.section-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--meta);
+}
+.section-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── Timeline ── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before {
+  content: ''; position: absolute; left: 9px; top: 4px; bottom: 4px;
+  width: 1px; background: var(--border);
+}
+.tl-item { position: relative; padding-bottom: var(--space-5); }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot {
+  position: absolute; left: -28px; top: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.tl-dot.running { background: rgba(37,99,235,0.12); }
+.tl-dot.running::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--agent-running); animation: pulse 1.5s infinite; }
+.tl-dot.done { background: rgba(22,163,74,0.12); }
+.tl-dot.done::after { content: '\2713'; font-size: 10px; color: var(--agent-done); }
+.tl-dot.wait { background: rgba(147,51,234,0.12); }
+.tl-dot.wait::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--agent-wait); }
+.tl-dot.error { background: rgba(220,38,38,0.12); }
+.tl-dot.error::after { content: '!'; font-size: 10px; font-weight: 700; color: var(--agent-error); }
+.tl-head { display: flex; align-items: center; gap: var(--space-2); }
+.tl-title { font-size: 13px; font-weight: 500; }
+.tl-badge {
+  display: inline-flex; padding: 1px 7px; border-radius: var(--radius-pill);
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.02em;
+}
+.tl-badge.running { background: rgba(37,99,235,0.10); color: var(--agent-running); }
+.tl-badge.done { background: rgba(22,163,74,0.10); color: var(--agent-done); }
+.tl-badge.wait { background: rgba(147,51,234,0.10); color: var(--agent-wait); }
+.tl-meta { font-family: var(--font-mono); font-size: 11px; color: var(--meta); margin-top: 2px; }
+.tl-body { font-size: 13px; color: var(--muted); margin-top: var(--space-2); }
+.tl-expand {
+  margin-top: var(--space-3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.tl-expand-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 10px; background: rgba(0,0,0,0.02); cursor: pointer;
+  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  transition: background 0.15s;
+}
+.tl-expand-head:hover { background: rgba(0,0,0,0.04); }
+.tl-expand-body {
+  padding: var(--space-3); font-family: var(--font-mono); font-size: 11px;
+  line-height: 1.6; color: var(--fg); background: #fafafa;
+  display: none; white-space: pre-wrap; word-break: break-word;
+}
+.tl-expand.open .tl-expand-body { display: block; }
+.tl-expand-chevron { transition: transform 0.2s; }
+.tl-expand.open .tl-expand-chevron { transform: rotate(180deg); }
+
+/* ── Approval Gate ── */
+.approval-card {
+  border: 2px solid var(--accent); border-radius: var(--radius-md);
+  padding: var(--space-5); background: var(--accent-active);
+}
+.approval-header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+.approval-icon {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--accent);
+  color: #fff; display: grid; place-items: center; flex-shrink: 0;
+}
+.approval-title { font-size: 15px; font-weight: 600; }
+.approval-desc { font-size: 13px; color: var(--muted); }
+.approval-summary {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: var(--space-4);
+  margin-bottom: var(--space-4); font-size: 13px; line-height: 1.6;
+}
+.approval-actions { display: flex; gap: var(--space-3); }
+
+/* ── Report Tabs ── */
+.report-tabs { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.report-tab-nav {
+  display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.02);
+}
+.report-tab-btn {
+  padding: 10px 18px; font: inherit; font-size: 13px; font-weight: 450;
+  color: var(--muted); background: none; border: none; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s ease;
+}
+.report-tab-btn:hover { color: var(--fg); }
+.report-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+.report-tab-panel { padding: var(--space-5); display: none; }
+.report-tab-panel.active { display: block; }
+.report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.report-item { }
+.report-item-label { font-size: 11px; color: var(--meta); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.report-item-value { font-size: 14px; font-weight: 500; }
+.report-item-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.report-list { list-style: none; padding: 0; margin: 0; }
+.report-list li {
+  padding: var(--space-3) 0; border-bottom: 1px solid var(--border-soft);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px;
+}
+.report-list li:last-child { border-bottom: none; }
+.report-calendar-grid { display: grid; grid-template-columns: 80px 1fr; gap: var(--space-3); align-items: start; }
+.report-calendar-week { font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding-top: 2px; }
+.report-calendar-items { display: flex; flex-direction: column; gap: var(--space-2); }
+.report-calendar-item {
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent); background: var(--accent-active);
+  font-size: 13px;
+}
+.report-calendar-platform { font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
+.safety-check { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--border-soft); }
+.safety-check:last-child { border-bottom: none; }
+.safety-icon { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font-size: 11px; }
+.safety-pass { background: rgba(22,163,74,0.12); color: var(--success); }
+.safety-warn { background: rgba(202,138,4,0.12); color: var(--warn); }
+.safety-label { font-size: 13px; flex: 1; }
+.safety-status { font-family: var(--font-mono); font-size: 11px; }
+
+.s-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.s-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.s-table th, .s-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.s-table th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.s-table .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.s-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+
+/* ── Responsive ── */
+@media (max-width: 820px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0;
+    z-index: 90; border-right: none; border-bottom: 1px solid var(--border);
+    transform: translateY(-100%); transition: transform 0.3s ease;
+    background: var(--bg); height: auto; max-height: 70vh;
+  }
+  .sidebar.open { transform: translateY(0); }
+  .mobile-toggle { display: inline-flex !important; }
+  .report-grid { grid-template-columns: 1fr; }
+  .report-calendar-grid { grid-template-columns: 1fr; }
+  .topnav-links { display: none; }
+}
+@media (min-width: 821px) {
+  .mobile-toggle { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<nav class="topnav">
+  <div class="topnav-left">
+    <div class="topnav-brand">SAM<span>Y</span></div>
+    <div class="topnav-links">
+      <a href="campaign-workspace.html" class="topnav-link active">Workspace</a>
+      <a href="evaluations.html" class="topnav-link">Evaluations</a>
+    </div>
+  </div>
+  <div class="topnav-right">
+    <button class="btn-icon mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle brief panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="topnav-avatar">JM</div>
+  </div>
+</nav>
+
+<!-- ── App Layout ── -->
+<div class="app-layout">
+
+  <!-- ── Sidebar: Campaign Brief ── -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Campaign Brief</div>
+
+    <div class="form-group">
+      <label class="form-label">Brand</label>
+      <input class="form-input" type="text" value="Glossier" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Campaign Objective</label>
+      <select class="form-select">
+        <option selected>Product Launch</option>
+        <option>Brand Awareness</option>
+        <option>Engagement</option>
+        <option>Conversion</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Target Audience</label>
+      <textarea class="form-textarea" rows="2">Gen Z women 18-26, skincare enthusiasts, active on TikTok and Instagram, interested in clean beauty</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Platforms</label>
+      <div class="form-tags">
+        <span class="form-tag">TikTok</span>
+        <span class="form-tag">Instagram</span>
+        <span class="form-tag">YouTube Shorts</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Budget Range</label>
+      <select class="form-select">
+        <option>$5K – $15K</option>
+        <option selected>$15K – $50K</option>
+        <option>$50K – $100K</option>
+        <option>$100K+</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Timeline</label>
+      <input class="form-input" type="text" value="4 weeks" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Key Messages</label>
+      <textarea class="form-textarea" rows="2">New Solar Repair SPF 50 — lightweight, reef-safe, invisible finish. Launch tied to summer solstice.</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tone</label>
+      <div class="form-tags">
+        <span class="form-tag">Authentic</span>
+        <span class="form-tag">Playful</span>
+        <span class="form-tag">Educational</span>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full" style="margin-top: var(--space-4);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+      Run Agent
+    </button>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="main-content">
+
+    <div class="main-header">
+      <div>
+        <h1 class="main-title">Glossier — Solar Repair Launch</h1>
+        <div class="main-subtitle">Campaign #GLS-2026-041 &middot; Started 2 min ago</div>
+      </div>
+      <div style="display:flex; gap: var(--space-2);">
+        <button class="btn btn-secondary btn-sm">Export</button>
+        <button class="btn btn-secondary btn-sm">Share</button>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="status-dot running"></div>
+      <span class="status-label">Agent running — Creator matching in progress</span>
+      <span class="status-meta">Step 4 of 6 &middot; 12 tool calls</span>
+    </div>
+
+    <!-- ── Agent Timeline ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Agent Timeline</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="timeline">
+
+        <!-- Step 1: Brief Parsed -->
+        <div class="tl-item">
+          <div class="tl-dot done"></div>
+          <div class="tl-head">
+            <span class="tl-title">Brief Parsed</span>
+            <span class="tl-badge done">complete</span>
+          </div>
+          <div class="tl-meta">0.3s &middot; 1 tool call</div>
+          <div class="tl-body">Extracted brand (Glossier), objective (Product Launch), 3 platforms, budget $15K–$50K, 4-week timeline.</div>
+          <div class="tl-expand" onclick="this.classList.toggle('open')">
+            <div class="tl-expand-head">
+              <span>Tool: parse_brief</span>
+              <svg class="tl-expand-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="tl-expand-body">{
+  "brand": "Glossier",
+  "objective": "product_launch",
+  "platforms": ["tiktok", "instagram", "youtube_shorts"],
+  "budget_range": "15k_50k",
+  "timeline_weeks": 4,
+  "audience_segments": ["gen_z_women", "skincare_enthusiasts"],
+  "key_product": "Solar Repair SPF 50"
+}</div>
+          </div>
+        </div>
+
+        <!-- Step 2: Audience Research -->
+        <div class="tl-item">
+          <div class="tl-dot done"></div>
+          <div class="tl-head">
+            <span class="tl-title">Audience Research</span>
+            <span class="tl-badge done">complete</span>
+          </div>
+          <div class="tl-meta">4.2s &middot; 3 tool calls</div>
+          <div class="tl-body">Identified 3 audience segments with engagement benchmarks. Top performing content types: GRWM, ingredient breakdowns, before/after.</div>
+          <div class="tl-expand" onclick="this.classList.toggle('open')">
+            <div class="tl-expand-head">
+              <span>Tool: search_audience_data</span>
+              <svg class="tl-expand-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="tl-expand-body">query: "gen z skincare tiktok engagement 2025"
+results: 847 posts analyzed
+avg_engagement_rate: 4.7%
+top_formats: ["GRWM", "ingredient_review", "before_after"]
+peak_posting: ["tue_18h", "thu_12h", "sat_10h"]</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Strategy Generation -->
+        <div class="tl-item">
+          <div class="tl-dot done"></div>
+          <div class="tl-head">
+            <span class="tl-title">Strategy Generation</span>
+            <span class="tl-badge done">complete</span>
+          </div>
+          <div class="tl-meta">8.1s &middot; 4 tool calls</div>
+          <div class="tl-body">Generated 3-phase campaign strategy: Tease (Week 1), Launch (Week 2-3), Sustain (Week 4). Content calendar with 18 posts across 3 platforms.</div>
+          <div class="tl-expand" onclick="this.classList.toggle('open')">
+            <div class="tl-expand-head">
+              <span>Tool: generate_strategy</span>
+              <svg class="tl-expand-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="tl-expand-body">phases: [
+  { name: "Tease", weeks: [1], posts: 4, focus: "mystery_reveal" },
+  { name: "Launch", weeks: [2,3], posts: 10, focus: "product_demo" },
+  { name: "Sustain", weeks: [4], posts: 4, focus: "user_testimonials" }
+]
+total_posts: 18
+estimated_reach: "2.4M – 3.1M"</div>
+          </div>
+        </div>
+
+        <!-- Step 4: Creator Matching (RUNNING) -->
+        <div class="tl-item">
+          <div class="tl-dot running"></div>
+          <div class="tl-head">
+            <span class="tl-title">Creator Matching</span>
+            <span class="tl-badge running">running</span>
+          </div>
+          <div class="tl-meta">6.4s elapsed &middot; 4 tool calls so far</div>
+          <div class="tl-body">Searching creator database for skincare micro-influencers (10K–100K) with high engagement on SPF content. Found 12 candidates, scoring compatibility...</div>
+          <div class="tl-expand open" onclick="this.classList.toggle('open')">
+            <div class="tl-expand-head">
+              <span>Tool: search_creators (in progress)</span>
+              <svg class="tl-expand-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="tl-expand-body">query: {
+  niche: ["skincare", "spf", "clean_beauty"],
+  followers_range: [10000, 100000],
+  engagement_min: 3.5,
+  platforms: ["tiktok", "instagram"],
+  brand_safety_min: 0.8
+}
+results_found: 12
+scoring: in_progress...</div>
+          </div>
+        </div>
+
+        <!-- Step 5: Safety Review (WAITING) -->
+        <div class="tl-item">
+          <div class="tl-dot wait"></div>
+          <div class="tl-head">
+            <span class="tl-title">Safety Review</span>
+            <span class="tl-badge wait">waiting</span>
+          </div>
+          <div class="tl-meta">Queued — runs after creator matching</div>
+          <div class="tl-body">Will run brand-safety checks on all selected creators and generated content against Glossier brand guidelines.</div>
+        </div>
+
+        <!-- Step 6: Human Approval (WAITING) -->
+        <div class="tl-item">
+          <div class="tl-dot wait"></div>
+          <div class="tl-head">
+            <span class="tl-title">Human Approval</span>
+            <span class="tl-badge wait">waiting</span>
+          </div>
+          <div class="tl-meta">Queued — final step</div>
+          <div class="tl-body">Campaign strategist reviews and approves the final plan before execution.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Approval Gate (preview — shown when agent reaches this step) ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Human Approval</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="approval-card">
+        <div class="approval-header">
+          <div class="approval-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <div class="approval-title">Review Campaign Plan</div>
+            <div class="approval-desc">The agent has generated a complete campaign plan. Review before publishing.</div>
+          </div>
+        </div>
+
+        <div class="approval-summary">
+          <strong>Glossier Solar Repair SPF 50</strong> — 4-week influencer campaign across TikTok, Instagram, and YouTube Shorts. 18 posts planned across 3 phases (Tease, Launch, Sustain). 8 creators shortlisted with combined reach of 1.2M. Estimated engagement: 4.2%–5.8%. Budget allocation: 60% creator fees, 25% boosted content, 15% production. All creators passed brand-safety screening.
+        </div>
+
+        <div class="approval-actions">
+          <button class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Approve Plan
+          </button>
+          <button class="btn btn-secondary">Request Changes</button>
+          <button class="btn btn-danger btn-sm">Reject</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Report Tabs ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Campaign Report</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="report-tabs">
+        <div class="report-tab-nav">
+          <button class="report-tab-btn active" onclick="switchTab(this, 'tab-strategy')">Strategy</button>
+          <button class="report-tab-btn" onclick="switchTab(this, 'tab-calendar')">Calendar</button>
+          <button class="report-tab-btn" onclick="switchTab(this, 'tab-creators')">Creators</button>
+          <button class="report-tab-btn" onclick="switchTab(this, 'tab-safety')">Safety</button>
+        </div>
+
+        <!-- Strategy Tab -->
+        <div class="report-tab-panel active" id="tab-strategy">
+          <div class="report-grid">
+            <div class="report-item">
+              <div class="report-item-label">Objective</div>
+              <div class="report-item-value">Product Launch</div>
+              <div class="report-item-desc">Solar Repair SPF 50 — summer solstice tie-in</div>
+            </div>
+            <div class="report-item">
+              <div class="report-item-label">Estimated Reach</div>
+              <div class="report-item-value">2.4M – 3.1M</div>
+              <div class="report-item-desc">Based on creator audience + organic projections</div>
+            </div>
+            <div class="report-item">
+              <div class="report-item-label">Campaign Phases</div>
+              <div class="report-item-value">3 phases / 4 weeks</div>
+              <div class="report-item-desc">Tease (Wk 1) → Launch (Wk 2-3) → Sustain (Wk 4)</div>
+            </div>
+            <div class="report-item">
+              <div class="report-item-label">Content Volume</div>
+              <div class="report-item-value">18 posts</div>
+              <div class="report-item-desc">Across TikTok, Instagram Reels, YouTube Shorts</div>
+            </div>
+            <div class="report-item">
+              <div class="report-item-label">Budget Allocation</div>
+              <div class="report-item-value">$32K estimated</div>
+              <div class="report-item-desc">60% creators · 25% boosted · 15% production</div>
+            </div>
+            <div class="report-item">
+              <div class="report-item-label">Primary KPIs</div>
+              <div class="report-item-value">Engagement + Reach</div>
+              <div class="report-item-desc">Target: 4.5% avg engagement, 2.5M impressions</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calendar Tab -->
+        <div class="report-tab-panel" id="tab-calendar">
+          <div class="report-calendar-grid">
+            <div class="report-calendar-week">Week 1<br><span style="font-size:10px;color:var(--meta)">TEASE</span></div>
+            <div class="report-calendar-items">
+              <div class="report-calendar-item">
+                <div class="report-calendar-platform">TikTok</div>
+                Mystery unboxing teaser — "something new is coming"
+              </div>
+              <div class="report-calendar-item">
+                <div class="report-calendar-platform">Instagram</div>
+                Ingredient spotlight carousel — reef-safe SPF science
+              </div>
+              <div class="report-calendar-item" style="border-left-color: var(--info);">
+                <div class="report-calendar-platform" style="color: var(--info);">YouTube Shorts</div>
+                "I tested a secret sunscreen for a week" vlog
+              </div>
+            </div>
+
+            <div class="report-calendar-week">Week 2–3<br><span style="font-size:10px;color:var(--meta)">LAUNCH</span></div>
+            <div class="report-calendar-items">
+              <div class="report-calendar-item">
+                <div class="report-calendar-platform">TikTok</div>
+                GRWM with Solar Repair — morning routine integration
+              </div>
+              <div class="report-calendar-item">
+                <div class="report-calendar-platform">Instagram</div>
+                Before/after reel — 7-day wear test
+              </div>
+              <div class="report-calendar-item" style="border-left-color: var(--info);">
+                <div class="report-calendar-platform" style="color: var(--info);">YouTube Shorts</div>
+                SPF comparison — Solar Repair vs. 3 competitors
+              </div>
+              <div class="report-calendar-item">
+                <div class="report-calendar-platform">TikTok</div>
+                Duet challenge — "show us your SPF game"
+              </div>
+            </div>
+
+            <div class="report-calendar-week">Week 4<br><span style="font-size:10px;color:var(--meta)">SUSTAIN</span></div>
+            <div class="report-calendar-items">
+              <div class="report-calendar-item">
+                <div class="report-calendar-platform">Instagram</div>
+                User testimonial compilation — real results
+              </div>
+              <div class="report-calendar-item" style="border-left-color: var(--info);">
+                <div class="report-calendar-platform" style="color: var(--info);">YouTube Shorts</div>
+                "Is it worth it?" honest review roundup
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Creators Tab -->
+        <div class="report-tab-panel" id="tab-creators">
+          <div class="s-table-wrap">
+          <table class="s-table">
+            <thead>
+              <tr>
+                <th>Creator</th>
+                <th>Platform</th>
+                <th>Followers</th>
+                <th>Engagement</th>
+                <th>Score</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>@skincarebyluna</strong></td>
+                <td>TikTok</td>
+                <td class="mono">87.2K</td>
+                <td class="mono">5.8%</td>
+                <td class="mono">94</td>
+                <td><span class="tl-badge done">matched</span></td>
+              </tr>
+              <tr>
+                <td><strong>@glowwithjess</strong></td>
+                <td>Instagram</td>
+                <td class="mono">62.4K</td>
+                <td class="mono">4.9%</td>
+                <td class="mono">91</td>
+                <td><span class="tl-badge done">matched</span></td>
+              </tr>
+              <tr>
+                <td><strong>@derpdiary</strong></td>
+                <td>TikTok</td>
+                <td class="mono">45.1K</td>
+                <td class="mono">6.2%</td>
+                <td class="mono">89</td>
+                <td><span class="tl-badge done">matched</span></td>
+              </tr>
+              <tr>
+                <td><strong>@cleangirlmia</strong></td>
+                <td>Instagram</td>
+                <td class="mono">38.7K</td>
+                <td class="mono">5.1%</td>
+                <td class="mono">87</td>
+                <td><span class="tl-badge done">matched</span></td>
+              </tr>
+              <tr>
+                <td><strong>@spfobsessed</strong></td>
+                <td>TikTok</td>
+                <td class="mono">29.3K</td>
+                <td class="mono">7.4%</td>
+                <td class="mono">86</td>
+                <td><span class="tl-badge running">scoring</span></td>
+              </tr>
+              <tr>
+                <td><strong>@beautylabkate</strong></td>
+                <td>YouTube</td>
+                <td class="mono">51.8K</td>
+                <td class="mono">4.3%</td>
+                <td class="mono">84</td>
+                <td><span class="tl-badge running">scoring</span></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- Safety Tab -->
+        <div class="report-tab-panel" id="tab-safety">
+          <div class="safety-check">
+            <div class="safety-icon safety-pass">&#10003;</div>
+            <span class="safety-label">Brand guideline compliance</span>
+            <span class="safety-status" style="color:var(--success)">PASS</span>
+          </div>
+          <div class="safety-check">
+            <div class="safety-icon safety-pass">&#10003;</div>
+            <span class="safety-label">FTC disclosure requirements included</span>
+            <span class="safety-status" style="color:var(--success)">PASS</span>
+          </div>
+          <div class="safety-check">
+            <div class="safety-icon safety-pass">&#10003;</div>
+            <span class="safety-label">Creator background screening</span>
+            <span class="safety-status" style="color:var(--success)">PASS</span>
+          </div>
+          <div class="safety-check">
+            <div class="safety-icon safety-pass">&#10003;</div>
+            <span class="safety-label">Content claims — no unsubstantiated health claims</span>
+            <span class="safety-status" style="color:var(--success)">PASS</span>
+          </div>
+          <div class="safety-check">
+            <div class="safety-icon safety-warn">!</div>
+            <span class="safety-label">Competitor mention check — 1 post references a competitor</span>
+            <span class="safety-status" style="color:var(--warn)">REVIEW</span>
+          </div>
+          <div class="safety-check">
+            <div class="safety-icon safety-pass">&#10003;</div>
+            <span class="safety-label">Age-gate compliance (no underage targeting)</span>
+            <span class="safety-status" style="color:var(--success)">PASS</span>
+          </div>
+          <div class="safety-check">
+            <div class="safety-icon safety-pass">&#10003;</div>
+            <span class="safety-label">Reef-safe claim verified against product specs</span>
+            <span class="safety-status" style="color:var(--success)">PASS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function switchTab(btn, panelId) {
+  document.querySelectorAll('.report-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.report-tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+</script>
+
+</body>
+</html>

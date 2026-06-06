@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "skills": {
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "daf64ca15f4fa081a6747766db538e2dbd1131725ed4fcdd3d538dc62c7035ba"
+    },
+    "nextjs-16-architecture": {
+      "source": "smithery.ai",
+      "sourceType": "well-known",
+      "computedHash": "3f4b51860ec95befc47e0eb374e34cfcb4b5335a7a6eeb2fc8413ab888a0904a"
+    }
+  }
+}
