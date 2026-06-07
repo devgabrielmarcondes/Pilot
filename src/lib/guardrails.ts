@@ -17,15 +17,25 @@ const unsupportedClaimPatterns = [
 ];
 
 export function runInputGuardrails(brief: CampaignBrief): GuardrailFinding[] {
-  const text = [
+  const requestText = [
     brief.brandName,
     brief.productOrService,
     brief.campaignGoal,
     brief.targetAudience,
+    brief.audienceSegments.join("\n"),
     brief.market,
     brief.budgetRange,
+    brief.brandVoice,
+    brief.competitors.join("\n"),
+    brief.creatorCriteria,
+    brief.successMetrics.join("\n"),
+    brief.mandatoryMessages.join("\n"),
+    brief.approvalRequirements,
     brief.constraints,
+    brief.knowledgeNotes,
   ].join("\n");
+  const policyText = brief.forbiddenClaims.join("\n");
+  const text = `${requestText}\n${policyText}`;
 
   const findings: GuardrailFinding[] = [];
 
@@ -45,6 +55,19 @@ export function runInputGuardrails(brief: CampaignBrief): GuardrailFinding[] {
       category: "unsupported_claim",
       message: "The brief includes a claim that should be softened or substantiated before launch.",
     });
+  }
+
+  for (const forbiddenClaim of brief.forbiddenClaims) {
+    const claim = forbiddenClaim.trim();
+
+    if (claim.length > 1 && requestText.toLowerCase().includes(claim.toLowerCase())) {
+      findings.push({
+        id: `forbidden-claim-${slugify(claim)}`,
+        severity: "warning",
+        category: "unsupported_claim",
+        message: `The brief asks for a forbidden claim: "${claim}". Remove or reframe it before launch.`,
+      });
+    }
   }
 
   if (/under\s?13|children|kids/i.test(text)) {
@@ -85,4 +108,8 @@ export function runOutputSafetyReview(summary: string): GuardrailFinding[] {
   }
 
   return findings;
+}
+
+function slugify(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48);
 }

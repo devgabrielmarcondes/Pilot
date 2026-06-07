@@ -1,6 +1,6 @@
 # Agentic Marketing Campaign Planner
 
-Full-stack portfolio demo for an Agentic Developer role at SAMY. The app plans a social-first campaign using a small agent loop, tool calling, lightweight local RAG, guardrails, human approval, and deterministic evaluations.
+Full-stack portfolio demo for an Agentic Developer role at SAMY. The app models a realistic campaign-planning workflow: create a campaign, complete a structured brief, run an agent with local tools, approve the final output, then evaluate the specific run.
 
 ## Stack
 
@@ -20,7 +20,22 @@ Full-stack portfolio demo for an Agentic Developer role at SAMY. The app plans a
 - Lightweight RAG over curated local knowledge
 - Prompt-injection and claim-safety guardrails
 - Human-in-the-loop approval before final report generation
-- Evaluation dashboard for tool success, guardrails, quality, latency, and cost
+- Run-specific evaluation for completeness, brief alignment, tool success, guardrails, actionability, and approval readiness
+- Browser-local project persistence with `localStorage`
+
+## Product Workflow
+
+1. `Campaigns`
+   - Starts empty on first load.
+   - Create or reopen campaign projects saved in this browser.
+2. `Workspace`
+   - Complete the structured campaign brief.
+   - Run the agent only when the brief has enough usable input.
+   - Review tool traces, retrieved knowledge, decisions, blockers, and the approval gate.
+   - Approve the draft to create final campaign output.
+3. `Evaluations`
+   - Empty until an approved run exists.
+   - Scores the selected run against the original brief and generated output.
 
 ## Quick Start
 
@@ -72,9 +87,13 @@ Validates the campaign brief, runs input guardrails, asks the active provider to
 
 Requires `{ draft, approved: true }` and returns the final campaign report.
 
+`POST /api/evaluations/run`
+
+Evaluates a specific run from `{ brief, draft, report, toolTrace }`.
+
 `GET /api/evaluations`
 
-Runs deterministic evaluation scenarios for happy path, prompt injection, and unsupported claim review.
+Returns an empty list in this local-first version. The UI uses run-specific evaluations instead of global dummy scenarios.
 
 ## Tests
 
@@ -85,10 +104,11 @@ bun test
 Covered areas:
 
 - Schema and provider selection
+- Local campaign store serialization
 - Guardrails
 - Tool execution
-- Evaluation scoring
+- Run evaluation scoring
 
 ## Demo Notes
 
-The project intentionally avoids databases, Redis, vector DBs, and external social APIs. The goal is a reliable two-day portfolio piece that makes the agentic architecture visible without adding operational setup.
+The project intentionally avoids databases, Redis, vector DBs, and external social APIs. Campaign projects are persisted in `localStorage` under `samy_campaign_projects_v1`, so the first visit looks like a real empty product instead of a pre-filled mock dashboard.

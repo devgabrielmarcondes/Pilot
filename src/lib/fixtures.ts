@@ -123,7 +123,16 @@ export const knowledgeBase = [
 ];
 
 export function selectRelevantTrends(brief: CampaignBrief) {
-  const haystack = `${brief.targetAudience} ${brief.market} ${brief.productOrService}`.toLowerCase();
+  const haystack = [
+    brief.targetAudience,
+    brief.audienceSegments.join(" "),
+    brief.market,
+    brief.productOrService,
+    brief.brandVoice,
+    brief.creatorCriteria,
+  ]
+    .join(" ")
+    .toLowerCase();
 
   return trendFixtures
     .map((trend) => {
@@ -139,16 +148,27 @@ export function selectRelevantTrends(brief: CampaignBrief) {
 
 export function selectCompetitors(brief: CampaignBrief) {
   const product = brief.productOrService.toLowerCase();
+  const userCompetitors = brief.competitors.map((brand) => ({
+    brand,
+    category: "User-provided competitor",
+    campaigns: [
+      `Review ${brand}'s creator formats, claims, and audience comments before final activation.`,
+      `Use ${brand} only as positioning context; do not copy claims, hooks, or creator language.`,
+    ],
+  }));
 
   if (product.includes("drink") || product.includes("beverage") || product.includes("energy")) {
-    return competitorFixtures.filter((item) => item.category.toLowerCase().includes("drink"));
+    return [
+      ...userCompetitors,
+      ...competitorFixtures.filter((item) => item.category.toLowerCase().includes("drink")),
+    ].slice(0, 4);
   }
 
-  return competitorFixtures.slice(0, 2);
+  return [...userCompetitors, ...competitorFixtures.slice(0, 2)].slice(0, 4);
 }
 
 export function selectCreators(brief: CampaignBrief) {
-  const target = `${brief.targetAudience} ${brief.productOrService}`.toLowerCase();
+  const target = `${brief.targetAudience} ${brief.audienceSegments.join(" ")} ${brief.productOrService} ${brief.creatorCriteria}`.toLowerCase();
 
   return influencerFixtures
     .map((creator) => ({
@@ -164,7 +184,21 @@ export function selectCreators(brief: CampaignBrief) {
 }
 
 export function retrieveKnowledge(brief: CampaignBrief) {
-  const query = `${brief.campaignGoal} ${brief.targetAudience} ${brief.constraints}`.toLowerCase();
+  const query = [
+    brief.campaignGoal,
+    brief.targetAudience,
+    brief.audienceSegments.join(" "),
+    brief.constraints,
+    brief.brandVoice,
+    brief.creatorCriteria,
+    brief.successMetrics.join(" "),
+    brief.mandatoryMessages.join(" "),
+    brief.forbiddenClaims.join(" "),
+    brief.approvalRequirements,
+    brief.knowledgeNotes,
+  ]
+    .join(" ")
+    .toLowerCase();
 
   return knowledgeBase
     .map((item) => {
@@ -175,7 +209,20 @@ export function retrieveKnowledge(brief: CampaignBrief) {
       return { ...item, score };
     })
     .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+    .slice(0, 3)
+    .concat(
+      brief.knowledgeNotes
+        ? [
+            {
+              id: "user-knowledge-notes",
+              title: "Campaign knowledge notes",
+              body: brief.knowledgeNotes,
+              tags: ["user-input", "brief"],
+              score: 10,
+            },
+          ]
+        : [],
+    );
 }
 
 export function buildCalendar(brief: CampaignBrief): CalendarPost[] {
@@ -194,8 +241,8 @@ export function buildCalendar(brief: CampaignBrief): CalendarPost[] {
       format,
       concept:
         day <= 3
-          ? `Tease ${brief.productOrService} through a ${format} built around the audience tension.`
-          : `Turn ${brief.brandName} proof points into a ${format} with creator-specific language.`,
+          ? `Tease ${brief.productOrService} through a ${format} built around: ${brief.mandatoryMessages[0]}.`
+          : `Turn ${brief.brandName} proof points into a ${format} with ${brief.brandVoice} creator language.`,
       objective: day <= 5 ? "Earn attention and comments" : "Convert interest into trial intent",
       approvalRisk: format === "comment reply" ? "medium" : "low",
     };

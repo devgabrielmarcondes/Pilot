@@ -169,13 +169,21 @@ export function buildDefaultToolRequests(brief: CampaignBrief): ToolExecutionReq
     {
       name: "knowledge_retrieve",
       input: {
-        query: `${brief.campaignGoal} ${brief.targetAudience} ${brief.constraints}`,
+        query: [
+          brief.campaignGoal,
+          brief.targetAudience,
+          brief.audienceSegments.join(" "),
+          brief.mandatoryMessages.join(" "),
+          brief.forbiddenClaims.join(" "),
+          brief.approvalRequirements,
+          brief.knowledgeNotes,
+        ].join(" "),
       },
     },
     {
       name: "trend_research",
       input: {
-        audience: brief.targetAudience,
+        audience: `${brief.targetAudience}; segments: ${brief.audienceSegments.join(", ")}`,
         market: brief.market,
       },
     },
@@ -184,12 +192,13 @@ export function buildDefaultToolRequests(brief: CampaignBrief): ToolExecutionReq
       input: {
         productOrService: brief.productOrService,
         market: brief.market,
+        competitors: brief.competitors,
       },
     },
     {
       name: "influencer_match",
       input: {
-        niche: brief.targetAudience,
+        niche: `${brief.targetAudience}; criteria: ${brief.creatorCriteria}`,
         budgetRange: brief.budgetRange,
       },
     },
@@ -204,6 +213,8 @@ export function buildDefaultToolRequests(brief: CampaignBrief): ToolExecutionReq
       name: "safety_review",
       input: {
         summary: `${brief.brandName} ${brief.productOrService} ${brief.campaignGoal}`,
+        forbiddenClaims: brief.forbiddenClaims,
+        approvalRequirements: brief.approvalRequirements,
       },
     },
   ];

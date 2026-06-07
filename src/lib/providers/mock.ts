@@ -52,19 +52,20 @@ export function buildDeterministicDraft(
     provider,
     generatedAt: new Date().toISOString(),
     brief,
-    executiveSummary: `${brief.brandName} should launch ${brief.productOrService} with a creator-led, social-first campaign that turns audience participation into measurable trial intent.`,
-    positioning: `${brief.brandName} becomes the practical, culturally fluent choice for ${brief.targetAudience} in ${brief.market}.`,
-    audienceInsight:
-      "The audience is more likely to trust repeated creator proof, transparent trade-offs, and formats that invite participation over polished brand claims.",
+    executiveSummary: `${brief.brandName} should launch ${brief.productOrService} with a creator-led campaign designed around ${brief.audienceSegments.join(", ")} and measured by ${brief.successMetrics.join(", ")}.`,
+    positioning: `${brief.brandName} becomes the ${brief.brandVoice} choice for ${brief.targetAudience} in ${brief.market}.`,
+    audienceInsight: `The highest-value segments are ${brief.audienceSegments.join(", ")}. The plan should make creators prove the product promise through specific routines, objections, and measurable actions.`,
     strategyPillars: [
-      "Use creator proof as the main trust engine.",
-      "Build the campaign as a two-week episodic story.",
-      "Route claims and higher-risk creator posts through human approval.",
+      `Anchor every asset on: ${brief.mandatoryMessages[0]}.`,
+      `Select creators using: ${brief.creatorCriteria}.`,
+      `Measure success through: ${brief.successMetrics.join(", ")}.`,
+      `Route content through approval requirements: ${brief.approvalRequirements}.`,
     ],
     competitorLearnings,
     ragInsights,
     contentThemes: [
       `${brief.productOrService} in real routines`,
+      ...brief.mandatoryMessages.slice(0, 2),
       "Creator challenge variants",
       "Comment-led objection handling",
       "Launch-week proof recap",
@@ -91,15 +92,27 @@ export function buildDeterministicFinalReport(draft: CampaignDraft): FinalCampai
     approvedAt: new Date().toISOString(),
     finalNarrative: `Approved campaign: ${draft.brief.brandName} will run a two-week social-first launch that combines creator validation, competitive contrast, and human-reviewed content checkpoints.`,
     launchChecklist: [
+      `Validate mandatory messages: ${draft.brief.mandatoryMessages.join("; ")}.`,
       "Confirm creator usage rights and approval windows.",
-      "Review all performance and health claims before publishing.",
+      `Block forbidden claims before publishing: ${draft.brief.forbiddenClaims.length > 0 ? draft.brief.forbiddenClaims.join("; ") : "none supplied"}.`,
       "Prepare channel-specific briefs with one required message and flexible creator language.",
       "Tag every post with campaign, creator, channel, and funnel objective metadata.",
     ],
     measurementPlan: [
-      "Track reach, completion rate, comments saved, and qualified site visits separately.",
+      `Track success metrics from the brief: ${draft.brief.successMetrics.join(", ")}.`,
+      "Track reach, completion rate, comment quality, saved content, and qualified site visits separately.",
       "Compare creator-led content against brand-owned content after week one.",
       "Use approval findings as a reliability signal for future agent runs.",
+    ],
+    budgetAllocation: [
+      `${draft.brief.budgetRange}: prioritize creator fees first, then boosted content, then lightweight production support.`,
+      "Keep a review reserve for legal, claim substantiation, and creator replacement.",
+    ],
+    nextActions: [
+      "Approve or revise the strategic direction.",
+      "Confirm creator selection rules against brand safety requirements.",
+      "Convert the calendar into channel-specific creator briefs.",
+      "Run the evaluation page to score completeness, alignment, and readiness.",
     ],
     residualRisks:
       draft.safetyFindings.length > 0

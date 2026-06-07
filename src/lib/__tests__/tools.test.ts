@@ -1,23 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { buildDefaultToolRequests, executeTools } from "../tools";
-import type { CampaignBrief } from "../schemas";
-
-const brief: CampaignBrief = {
-  brandName: "Volt Pop",
-  productOrService: "zero sugar energy drink",
-  campaignGoal: "Launch a creator-led campaign that earns product trial.",
-  targetAudience: "Gen Z students and fitness fans",
-  market: "United States",
-  budgetRange: "$40k-$60k",
-  channels: ["TikTok", "Instagram"],
-  timelineWeeks: 2,
-  constraints: "Avoid medical claims.",
-};
+import { completeBrief } from "./test-fixtures";
 
 describe("tools", () => {
   test("executes the default agent tool chain", async () => {
-    const requests = buildDefaultToolRequests(brief);
-    const traces = await executeTools(requests, brief);
+    const requests = buildDefaultToolRequests(completeBrief);
+    const traces = await executeTools(requests, completeBrief);
 
     expect(traces).toHaveLength(6);
     expect(traces.every((trace) => trace.status === "success")).toBe(true);

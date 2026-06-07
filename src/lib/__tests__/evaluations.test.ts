@@ -1,12 +1,24 @@
 import { describe, expect, test } from "bun:test";
-import { runEvaluationSuite } from "../evaluations";
+import { evaluateCampaignRun } from "../evaluations";
+import { buildDeterministicDraft, buildDeterministicFinalReport } from "../providers/mock";
+import { buildDefaultToolRequests, executeTools } from "../tools";
+import { completeBrief } from "./test-fixtures";
 
-describe("evaluations", () => {
-  test("returns deterministic evaluation results", async () => {
-    const results = await runEvaluationSuite();
+describe("run evaluations", () => {
+  test("scores an approved campaign run", async () => {
+    const toolTrace = await executeTools(buildDefaultToolRequests(completeBrief), completeBrief);
+    const draft = buildDeterministicDraft(completeBrief, toolTrace, "mock");
+    const report = buildDeterministicFinalReport(draft);
+    const evaluation = evaluateCampaignRun({
+      runId: "run_1",
+      brief: completeBrief,
+      draft,
+      report,
+      toolTrace,
+    });
 
-    expect(results).toHaveLength(3);
-    expect(results.every((result) => result.metrics.guardrailPassRate >= 0)).toBe(true);
-    expect(results.find((result) => result.id === "guardrail-injection")?.status).toBe("pass");
+    expect(evaluation.runId).toBe("run_1");
+    expect(evaluation.status).toBe("pass");
+    expect(evaluation.checks.length).toBe(5);
   });
 });
