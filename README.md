@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/pilot-logo.png" alt="Pilot Logo" width="180" />
+  <img src="public/pilot-logo-bg-white.png" alt="Pilot Logo" width="180" />
 
   <h1>Agentic Marketing Campaign Planner</h1>
 
