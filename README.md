@@ -7,9 +7,9 @@
 
   <p>
     <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" alt="Next.js" />
-    <img src="https://img.shields.io/badge/TypeScript-Blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/TypeScript-1a1a2e?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-1a1a2e?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
     <img src="https://img.shields.io/badge/Anthropic-Claude-D1AC98?style=for-the-badge&logo=anthropic" alt="Claude" />
-    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
   </p>
 </div>
 
