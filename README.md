@@ -1,6 +1,21 @@
-# Agentic Marketing Campaign Planner
+<div align="center">
+  <img src="public/pilot-logo.png" alt="Pilot Logo" width="180" />
 
-Full-stack portfolio demo for an Agentic Developer role at SAMY. The app models a realistic campaign-planning workflow: create a campaign, complete a structured brief, run an agent with local tools, approve the final output, then evaluate the specific run.
+  <h1>Agentic Marketing Campaign Planner</h1>
+
+  <p><strong>Intelligent, Autonomous, and Powerful Campaign Strategy Formulation</strong></p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/TypeScript-Blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Anthropic-Claude-D1AC98?style=for-the-badge&logo=anthropic" alt="Claude" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
+  </p>
+</div>
+
+<br />
+
+> An AI-native platform designed to orchestrate end-to-end marketing campaigns. Pilot models a realistic campaign-planning workflow: create a project, complete a structured brief, run an autonomous agent with local tool access, approve the final output, and evaluate the specific run against core KPIs.
 
 ## Stack
 
