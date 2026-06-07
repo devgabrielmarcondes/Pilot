@@ -17,6 +17,10 @@
 
 > An AI-native platform designed to orchestrate end-to-end marketing campaigns. Pilot models a realistic campaign-planning workflow: create a project, complete a structured brief, run an autonomous agent with local tool access, approve the final output, and evaluate the specific run against core KPIs.
 
+<div align="center">
+  <img src="public/pilot-lp-banner.png" alt="Pilot Landing Page Banner" width="100%" />
+</div>
+
 ## Stack
 
 - Next.js 16 App Router
